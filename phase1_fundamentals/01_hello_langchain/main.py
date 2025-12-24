@@ -16,6 +16,7 @@ LangChain 1.0 基础教程 - 第一个 LLM 调用
 import os
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
+from langchain_deepseek import ChatDeepSeek
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 
 # ============================================================================
@@ -26,24 +27,26 @@ from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 load_dotenv()
 
 # 验证 API 密钥是否存在
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-if not GROQ_API_KEY:
+# GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+DEEPSEEK_BASE_URL = os.getenv("DEEPSEEK_BASE_URL")
+if not DEEPSEEK_API_KEY:
     raise ValueError(
-        "\n" + "="*70 + "\n"
-        "❌ 错误：未找到 GROQ_API_KEY 环境变量！\n"
-        "="*70 + "\n"
-        "请按照以下步骤设置 API 密钥：\n\n"
-        "1️⃣ 访问 https://console.groq.com/keys 获取免费 API 密钥\n"
-        "2️⃣ 复制 .env.example 为 .env\n"
-        "   命令：cp .env.example .env\n"
-        "3️⃣ 在 .env 文件中填入你的 Groq API Key：\n"
-        "   GROQ_API_KEY=gsk_your_actual_key_here\n"
-        "4️⃣ 重新运行程序\n"
-        "="*70
+        "\n" + "=" * 70 + "\n"
+                          "❌ 错误：未找到 GROQ_API_KEY 环境变量！\n"
+                          "=" * 70 + "\n"
+                                     "请按照以下步骤设置 API 密钥：\n\n"
+                                     "1️⃣ 访问 https://console.groq.com/keys 获取免费 API 密钥\n"
+                                     "2️⃣ 复制 .env.example 为 .env\n"
+                                     "   命令：cp .env.example .env\n"
+                                     "3️⃣ 在 .env 文件中填入你的 Groq API Key：\n"
+                                     "   GROQ_API_KEY=gsk_your_actual_key_here\n"
+                                     "4️⃣ 重新运行程序\n"
+                                     "=" * 70
     )
 
 # 验证 API 密钥格式（Groq API key 通常以 gsk_ 开头）
-if not GROQ_API_KEY.startswith("gsk_"):
+if not DEEPSEEK_API_KEY.startswith("sk-"):
     print("\n" + "⚠️  警告：你的 GROQ_API_KEY 格式可能不正确")
     print("   Groq API 密钥通常以 'gsk_' 开头")
     print("   请确认你从 https://console.groq.com/keys 获取了正确的密钥\n")
@@ -60,15 +63,24 @@ def example_1_simple_invoke():
     - init_chat_model: 用于初始化聊天模型的统一接口
     - invoke: 同步调用模型的方法
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 1：最简单的 LLM 调用")
-    print("="*70)
+    print("=" * 70)
 
     # 初始化模型
     # 格式：init_chat_model("提供商:模型名称")
-    model = init_chat_model(
-        "groq:llama-3.3-70b-versatile",  # Groq 提供的 Llama 3.3 模型
-        api_key=GROQ_API_KEY
+    # model = init_chat_model(
+    #     "groq:llama-3.3-70b-versatile",  # Groq 提供的 Llama 3.3 模型
+    #     api_key=GROQ_API_KEY
+    # )
+
+    model = ChatDeepSeek(
+        model="deepseek-v3.2",
+        temperature=1.3,
+        api_key=DEEPSEEK_API_KEY,
+        api_base=DEEPSEEK_BASE_URL
+        # api_key="...",
+        # other params...
     )
 
     # 使用字符串直接调用模型
@@ -79,10 +91,10 @@ def example_1_simple_invoke():
     print(f"\n返回对象类型: {type(response)}")
     print(f"返回对象: {response}")
 
-
-# ============================================================================
-# 示例 2：使用消息列表进行对话
-# ============================================================================
+#
+# # ============================================================================
+# # 示例 2：使用消息列表进行对话
+# # ============================================================================
 def example_2_messages():
     """
     示例2：使用消息列表
@@ -94,13 +106,14 @@ def example_2_messages():
 
     消息列表允许你构建多轮对话历史
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 2：使用消息列表构建对话")
-    print("="*70)
+    print("=" * 70)
 
     model = init_chat_model(
-        "groq:llama-3.3-70b-versatile",
-        api_key=GROQ_API_KEY
+        "deepseek:deepseek-v3.2",
+        api_key=DEEPSEEK_API_KEY,
+        api_base=DEEPSEEK_BASE_URL
     )
 
     # 构建消息列表
@@ -121,7 +134,7 @@ def example_2_messages():
     messages.append(response)
     messages.append(HumanMessage(content="能给我一个简单的例子吗？"))
 
-    print("\n" + "-"*70)
+    print("\n" + "-" * 70)
     print("继续对话...")
     print("用户问题:", messages[-1].content)
 
@@ -141,13 +154,17 @@ def example_3_dict_messages():
 
     这种格式与 OpenAI API 的格式一致，更易于使用
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 3：使用字典格式的消息（推荐）")
-    print("="*70)
+    print("=" * 70)
 
-    model = init_chat_model(
-        "groq:llama-3.3-70b-versatile",
-        api_key=GROQ_API_KEY
+    model = ChatDeepSeek(
+        model="deepseek-v3.2",
+        temperature=1.0,
+        api_key=DEEPSEEK_API_KEY,
+        api_base=DEEPSEEK_BASE_URL
+        # api_key="...",
+        # other params...
     )
 
     # 使用字典格式构建消息
@@ -180,16 +197,26 @@ def example_4_model_parameters():
     - max_tokens: 限制输出的最大 token 数量
     - model_kwargs: 传递给底层模型的额外参数
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 4：配置模型参数")
-    print("="*70)
+    print("=" * 70)
 
     # 创建一个温度较低的模型（更确定性）
-    model_deterministic = init_chat_model(
-        "groq:llama-3.3-70b-versatile",
-        api_key=GROQ_API_KEY,
-        temperature=0.0,  # 最确定性
-        max_tokens=100    # 限制输出长度
+    # model_deterministic = init_chat_model(
+    #     "groq:llama-3.3-70b-versatile",
+    #     api_key=GROQ_API_KEY,
+    #     temperature=0.0,  # 最确定性
+    #     max_tokens=100  # 限制输出长度
+    # )
+
+    model_deterministic = ChatDeepSeek(
+        model="deepseek-v3.2",
+        temperature=0.0,
+        api_key=DEEPSEEK_API_KEY,
+        api_base=DEEPSEEK_BASE_URL,
+        max_tokens=100
+        # api_key="...",
+        # other params...
     )
 
     prompt = "写一个关于春天的句子。"
@@ -200,15 +227,16 @@ def example_4_model_parameters():
     # 调用两次，观察输出的一致性
     for i in range(2):
         response = model_deterministic.invoke(prompt)
-        print(f"  第 {i+1} 次: {response.content}")
+        print(f"  第 {i + 1} 次: {response.content}")
 
-    print("\n" + "-"*70)
+    print("\n" + "-" * 70)
 
     # 创建一个温度较高的模型（更随机）
-    model_creative = init_chat_model(
-        "groq:llama-3.3-70b-versatile",
-        api_key=GROQ_API_KEY,
-        temperature=1.5,  # 更有创造性
+    model_creative =  ChatDeepSeek(
+        model="deepseek-v3.2",
+        temperature=1.5,
+        api_key=DEEPSEEK_API_KEY,
+        api_base=DEEPSEEK_BASE_URL,
         max_tokens=100
     )
 
@@ -217,7 +245,7 @@ def example_4_model_parameters():
     # 调用两次，观察输出的差异
     for i in range(2):
         response = model_creative.invoke(prompt)
-        print(f"  第 {i+1} 次: {response.content}")
+        print(f"  第 {i + 1} 次: {response.content}")
 
 
 # ============================================================================
@@ -233,13 +261,17 @@ def example_5_response_structure():
     - additional_kwargs: 额外的关键字参数
     - id: 消息 ID
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 5：invoke 返回值详解")
-    print("="*70)
+    print("=" * 70)
 
-    model = init_chat_model(
-        "groq:llama-3.3-70b-versatile",
-        api_key=GROQ_API_KEY
+    model = ChatDeepSeek(
+        model="deepseek-v3.2",
+        temperature=1.0,
+        api_key=DEEPSEEK_API_KEY,
+        api_base=DEEPSEEK_BASE_URL
+        # api_key="...",
+        # other params...
     )
 
     response = model.invoke("解释一下什么是递归？用一句话。")
@@ -276,14 +308,18 @@ def example_6_error_handling():
     - 速率限制
     - 模型不可用
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 6：错误处理最佳实践")
-    print("="*70)
+    print("=" * 70)
 
     try:
-        model = init_chat_model(
-            "groq:llama-3.3-70b-versatile",
-            api_key=GROQ_API_KEY
+        model = ChatDeepSeek(
+            model="deepseek-v3.2",
+            temperature=1.0,
+            api_key=DEEPSEEK_API_KEY,
+            api_base=DEEPSEEK_BASE_URL
+            # api_key="...",
+            # other params...
         )
 
         response = model.invoke("Hello! How are you?")
@@ -311,14 +347,14 @@ def example_7_multiple_models():
     - "groq:mixtral-8x7b-32768"
     - "groq:gemma2-9b-it"
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 7：对比不同模型的输出")
-    print("="*70)
+    print("=" * 70)
 
     # Groq 上可用的不同模型
     models_to_test = [
-        "groq:llama-3.3-70b-versatile",
-        "groq:mixtral-8x7b-32768",
+        "deepseek-v3.2",
+        "deepseek-v3.2-exp",
     ]
 
     prompt = "用一句话解释什么是机器学习。"
@@ -328,13 +364,14 @@ def example_7_multiple_models():
         try:
             print(f"\n使用模型: {model_name}")
             print("-" * 70)
-
-            model = init_chat_model(
-                model_name,
-                api_key=GROQ_API_KEY,
-                temperature=0.7
+            model = ChatDeepSeek(
+                model=model_name,
+                temperature=1.0,
+                api_key=DEEPSEEK_API_KEY,
+                api_base=DEEPSEEK_BASE_URL
+                # api_key="...",
+                # other params...
             )
-
             response = model.invoke(prompt)
             print(f"回复: {response.content}")
 
@@ -349,23 +386,23 @@ def main():
     """
     主程序：运行所有示例
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(" LangChain 1.0 基础教程 - 第一个 LLM 调用")
-    print("="*70)
+    print("=" * 70)
 
     try:
         # 运行所有示例
-        example_1_simple_invoke()
-        example_2_messages()
-        example_3_dict_messages()
-        example_4_model_parameters()
-        example_5_response_structure()
-        example_6_error_handling()
+        # example_1_simple_invoke()
+        # example_2_messages()
+        # example_3_dict_messages()
+        # example_4_model_parameters()
+        # example_5_response_structure()
+        # example_6_error_handling()
         example_7_multiple_models()
 
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(" 所有示例运行完成！")
-        print("="*70)
+        print("=" * 70)
         print("\n下一步学习:")
         print("  - 02_prompt_templates: 学习如何使用提示词模板")
         print("  - 03_messages: 深入理解消息类型")
