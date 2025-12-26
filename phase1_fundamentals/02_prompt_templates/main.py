@@ -30,15 +30,17 @@ from langchain_core.prompts import (
 
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+DEEPSEEK_BASE_URL = os.getenv("DEEPSEEK_BASE_URL")
 
-if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here_replace_this":
-    raise ValueError(
-        "\n请先在 .env 文件中设置有效的 GROQ_API_KEY\n"
-        "访问 https://console.groq.com/keys 获取免费密钥"
-    )
+# if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here_replace_this":
+#     raise ValueError(
+#         "\n请先在 .env 文件中设置有效的 GROQ_API_KEY\n"
+#         "访问 https://console.groq.com/keys 获取免费密钥"
+#     )
 
 # 初始化模型
-model = init_chat_model("groq:llama-3.3-70b-versatile", api_key=GROQ_API_KEY)
+model = init_chat_model("deepseek:deepseek-v3.2", api_key=DEEPSEEK_API_KEY, api_base=DEEPSEEK_BASE_URL)
 
 
 # ============================================================================
@@ -51,13 +53,13 @@ def example_1_why_templates():
     问题：字符串拼接容易出错、难维护、不可复用
     解决：使用提示词模板
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 1：为什么需要提示词模板？")
-    print("="*70)
+    print("=" * 70)
 
     # ❌ 不推荐：使用字符串拼接
     print("\n【方式 1：字符串拼接（不推荐）】")
-    print("-"*70)
+    print("-" * 70)
 
     topic = "Python"
     difficulty = "初学者"
@@ -71,7 +73,7 @@ def example_1_why_templates():
 
     # ✅ 推荐：使用 PromptTemplate
     print("【方式 2：使用 PromptTemplate（推荐）】")
-    print("-"*70)
+    print("-" * 70)
 
     # 创建可复用的模板
     template = PromptTemplate.from_template(
@@ -105,9 +107,9 @@ def example_2_prompt_template_basics():
     PromptTemplate 用于简单的文本模板
     适合单一提示词的场景
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 2：PromptTemplate 基础用法")
-    print("="*70)
+    print("=" * 70)
 
     # 方法 1：使用 from_template（最简单）
     print("\n【方法 1：from_template（推荐）】")
@@ -155,9 +157,9 @@ def example_3_chat_prompt_template():
     ChatPromptTemplate 用于构建聊天消息
     支持 system、user、assistant 多种角色
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 3：ChatPromptTemplate - 聊天消息模板")
-    print("="*70)
+    print("=" * 70)
 
     # 方法 1：使用元组格式（最简单，推荐）
     print("\n【方法 1：元组格式（推荐）】")
@@ -205,9 +207,9 @@ def example_4_conversation_template():
 
     包含系统提示、对话历史和当前问题
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 4：多轮对话模板")
-    print("="*70)
+    print("=" * 70)
 
     # 创建包含对话历史的模板
     template = ChatPromptTemplate.from_messages([
@@ -241,6 +243,56 @@ def example_4_conversation_template():
     print(f"\nAI 回复：{response.content}\n")
 
 
+# ==========
+# 示例 4.1： 导入历史对话的多轮对话
+# ==========
+def example_4_1_conversation_template():
+    print("\n" + "=" * 70)
+    print("示例 4.1：多轮对话模板")
+    print("=" * 70)
+
+    # 创建包含对话历史的模板
+    from langchain_core.prompts import MessagesPlaceholder
+
+    template = ChatPromptTemplate.from_messages([
+        ("system", "你是一个{role}。{instruction}"),
+        MessagesPlaceholder(variable_name="history"),
+        ("user", "{question}"),
+    ])
+
+    # 使用 partial 预填充固定参数
+    template = template.partial(
+        role="Python 专家",
+        instruction="回答要简洁、准确"
+    )
+
+    # 使用时传入历史消息
+    messages = template.format_messages(
+        history=[],
+        question="什么是列表"
+    )
+
+    print("模板结构：")
+    print("  1. System: 设定角色和指令")
+    print("  2. User: 问题")
+    print("  3. Assistant: 回答")
+
+    response = model.invoke(messages)
+    print(f"第1轮 AI 回复：{response.content}\n")
+
+    # 填充模板
+    from langchain_core.messages import HumanMessage
+    from langchain_core.messages import AIMessage
+    messages = template.format_messages(
+        history=[
+            HumanMessage(content="什么是列表"),
+            AIMessage(content=response.content)
+        ],
+        question="它和元组有什么区别？"
+    )
+    response = model.invoke(messages)
+    print(f"第2轮 AI 回复：{response.content}\n")
+
 # ============================================================================
 # 示例 5：使用 MessagePromptTemplate（高级）
 # ============================================================================
@@ -250,9 +302,9 @@ def example_5_message_templates():
 
     提供更细粒度的控制
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 5：MessagePromptTemplate 类（高级用法）")
-    print("="*70)
+    print("=" * 70)
 
     # 分别创建不同类型的消息模板
     system_template = SystemMessagePromptTemplate.from_template(
@@ -297,9 +349,9 @@ def example_6_partial_variables():
     - 某些变量固定不变
     - 需要创建模板变体
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 6：部分变量（Partial Variables）")
-    print("="*70)
+    print("=" * 70)
 
     # 创建原始模板
     original_template = ChatPromptTemplate.from_messages([
@@ -334,8 +386,6 @@ def example_6_partial_variables():
     print(f"文章 2：{response2.content[:150]}...\n")
 
 
-
-
 # ============================================================================
 # 示例 9：与 LCEL 链式调用（预览）
 # ============================================================================
@@ -345,9 +395,9 @@ def example_9_lcel_chains():
 
     LangChain Expression Language (LCEL)
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 9：LCEL 链式调用（预览）")
-    print("="*70)
+    print("=" * 70)
 
     # 创建模板
     template = ChatPromptTemplate.from_messages([
@@ -382,36 +432,36 @@ def example_9_lcel_chains():
 # ============================================================================
 def main():
     """运行所有示例"""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(" LangChain 1.0 基础教程 - 提示词模板")
-    print("="*70)
+    print("=" * 70)
 
     try:
-        example_1_why_templates()
-        input("\n按 Enter 继续...")
+        # example_1_why_templates()
+        # input("\n按 Enter 继续...")
 
-        example_2_prompt_template_basics()
-        input("\n按 Enter 继续...")
+        # example_2_prompt_template_basics()
+        # input("\n按 Enter 继续...")
+        # #
+        # example_3_chat_prompt_template()
+        # input("\n按 Enter 继续...")
+        #
+        # example_4_conversation_template()
+        # input("\n按 Enter 继续...")
+        #
+        # example_5_message_templates()
+        # input("\n按 Enter 继续...")
+        #
+        # example_6_partial_variables()
+        # input("\n按 Enter 继续...")
+        #
+        # example_9_lcel_chains()
 
-        example_3_chat_prompt_template()
-        input("\n按 Enter 继续...")
+        example_4_1_conversation_template()
 
-        example_4_conversation_template()
-        input("\n按 Enter 继续...")
-
-        example_5_message_templates()
-        input("\n按 Enter 继续...")
-
-        example_6_partial_variables()
-        input("\n按 Enter 继续...")
-
-
-
-        example_9_lcel_chains()
-
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(" 所有示例运行完成！")
-        print("="*70)
+        print("=" * 70)
         print("\n你已经学会了：")
         print("  ✅ PromptTemplate 基础用法")
         print("  ✅ ChatPromptTemplate 聊天模板")
