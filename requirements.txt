@@ -29,27 +29,27 @@ langsmith>=0.2.0
 # ----------------------------------------------------------------------------
 
 # ⭐⭐⭐ Groq 集成（推荐！免费且超快）
-langchain-groq>=0.2.0
+#langchain-groq>=0.2.0
 
 # OpenAI 集成
 langchain-openai>=0.2.0
 
 # Anthropic 集成（Claude）
-langchain-anthropic>=0.3.0
+#langchain-anthropic>=0.3.0
 
 # Google Gemini 集成（免费额度慷慨）
-langchain-google-genai>=2.0.0
+#langchain-google-genai>=2.0.0
 
 # Cohere 集成（可选）
 # langchain-cohere>=0.3.0
 
 # HuggingFace 集成（用于 Embeddings - Module 13, 14）
-langchain-huggingface>=0.1.0
+#langchain-huggingface>=0.1.0
 
 # HuggingFace Transformers 和 Embeddings
-sentence-transformers>=3.0.0
-transformers>=4.40.0
-torch>=2.0.0  # PyTorch（用于 HuggingFace 模型）
+#sentence-transformers>=3.0.0
+#transformers>=4.40.0
+#torch>=2.0.0  # PyTorch（用于 HuggingFace 模型）
 
 # ----------------------------------------------------------------------------
 # 社区集成和工具
@@ -69,12 +69,12 @@ langchain-text-splitters>=0.3.0
 chromadb>=0.5.0
 
 # FAISS - Facebook AI 相似度搜索
-faiss-cpu>=1.8.0
+#faiss-cpu>=1.8.0
 # 如果有 GPU，使用：faiss-gpu>=1.8.0
 
 # Pinecone - 云向量数据库（需要注册）
-langchain-pinecone>=0.2.0
-pinecone-client>=6.0.0
+#langchain-pinecone>=0.2.0
+#pinecone-client>=6.0.0
 
 # Weaviate（可选）
 # weaviate-client>=4.0.0
@@ -121,7 +121,7 @@ pydantic-settings>=2.0.0
 # ----------------------------------------------------------------------------
 
 # 环境变量加载
-python-dotenv>=1.0.0
+#python-dotenv>=1.0.0
 
 # ----------------------------------------------------------------------------
 # 网络请求和 API

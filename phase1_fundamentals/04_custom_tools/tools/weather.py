@@ -35,3 +35,4 @@ if __name__ == "__main__":
     print("测试天气工具：")
     print(f"北京天气: {get_weather.invoke({'city': '北京'})}")
     print(f"上海天气: {get_weather.invoke({'city': '上海'})}")
+    print(f"杭州天气: {get_weather.invoke({'city': '杭州'})}")

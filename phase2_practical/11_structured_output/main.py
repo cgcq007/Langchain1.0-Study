@@ -13,17 +13,23 @@ LangChain 1.0 - Structured Output (结构化输出)
 import os
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
+from langchain_deepseek import ChatDeepSeek
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from enum import Enum
 
 load_dotenv()
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+DEEPSEEK_BASE_URL = os.getenv("DEEPSEEK_BASE_URL")
 
-if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here_replace_this":
-    raise ValueError("请先设置 GROQ_API_KEY")
-
-model = init_chat_model("groq:llama-3.3-70b-versatile", api_key=GROQ_API_KEY)
+model = ChatDeepSeek(
+        model="deepseek-v3.2",
+        temperature=1.0,
+        api_key=DEEPSEEK_API_KEY,
+        api_base=DEEPSEEK_BASE_URL
+        # api_key="...",
+        # other params...
+    )
 
 
 # ============================================================================
@@ -315,7 +321,7 @@ def example_7_review_analysis():
     review_text = """
     这款 iPhone 15 Pro 真的很不错！摄像头非常强大，夜拍效果惊艳。
     钛金属边框手感也很好。但是价格有点贵，而且没有充电器。
-    总体来说还是值得购买的，我给 4 分。
+    总体来说还是值得购买的，我给 1 分。
     """
 
     print(f"\n评论内容:\n{review_text}")
@@ -343,20 +349,20 @@ def main():
     print("="*70)
 
     try:
-        example_1_basic_structured_output()
-        input("\n按 Enter 继续...")
-
-        example_2_list_extraction()
-        input("\n按 Enter 继续...")
-
-        example_3_nested_models()
-        input("\n按 Enter 继续...")
-
-        example_4_optional_and_defaults()
-        input("\n按 Enter 继续...")
-
-        example_5_enum_types()
-        input("\n按 Enter 继续...")
+        # example_1_basic_structured_output()
+        # input("\n按 Enter 继续...")
+        #
+        # example_2_list_extraction()
+        # input("\n按 Enter 继续...")
+        #
+        # example_3_nested_models()
+        # input("\n按 Enter 继续...")
+        #
+        # example_4_optional_and_defaults()
+        # input("\n按 Enter 继续...")
+        #
+        # example_5_enum_types()
+        # input("\n按 Enter 继续...")
 
         example_6_customer_info_extraction()
         input("\n按 Enter 继续...")

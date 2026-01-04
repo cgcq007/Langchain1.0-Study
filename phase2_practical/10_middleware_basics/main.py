@@ -16,15 +16,21 @@ from langchain.chat_models import init_chat_model
 from langchain.agents import create_agent
 from langchain_core.tools import tool
 from langchain.agents.middleware import AgentMiddleware
+from langchain_deepseek import ChatDeepSeek
 from langgraph.checkpoint.memory import InMemorySaver
 
 load_dotenv()
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+DEEPSEEK_BASE_URL = os.getenv("DEEPSEEK_BASE_URL")
 
-if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here_replace_this":
-    raise ValueError("请先设置 GROQ_API_KEY")
-
-model = init_chat_model("groq:llama-3.3-70b-versatile", api_key=GROQ_API_KEY)
+model = ChatDeepSeek(
+        model="deepseek-v3.2",
+        temperature=1.3,
+        api_key=DEEPSEEK_API_KEY,
+        api_base=DEEPSEEK_BASE_URL
+        # api_key="...",
+        # other params...
+    )
 
 @tool
 def get_weather(city: str) -> str:
@@ -514,6 +520,7 @@ def main():
         input("\n按 Enter 继续...")
 
         example_6_conditional_jump()
+
         input("\n按 Enter 继续...")
 
         example_7_builtin_middleware()

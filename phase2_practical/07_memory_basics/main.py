@@ -14,16 +14,23 @@ from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain.agents import create_agent
 from langchain_core.tools import tool
+from langchain_deepseek import ChatDeepSeek
 from langgraph.checkpoint.memory import InMemorySaver
 
 load_dotenv()
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+DEEPSEEK_BASE_URL = os.getenv("DEEPSEEK_BASE_URL")
 
-if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here_replace_this":
+if not DEEPSEEK_API_KEY or DEEPSEEK_API_KEY == "your_groq_api_key_here_replace_this":
     raise ValueError("请先设置 GROQ_API_KEY")
 
-model = init_chat_model("groq:llama-3.3-70b-versatile", api_key=GROQ_API_KEY)
-
+model = ChatDeepSeek(
+    model="deepseek-v3.2",
+    api_key=DEEPSEEK_API_KEY,
+    api_base=DEEPSEEK_BASE_URL
+    # api_key="...",
+    # other params...
+)
 # 创建一个简单的工具
 @tool
 def get_user_info(user_id: str) -> str:
@@ -96,6 +103,7 @@ def example_2_with_memory():
 
     # config 中指定 thread_id
     config = {"configurable": {"thread_id": "conversation_1"}}
+    config2 = {"configurable": {"thread_id": "conversation_2"}}
 
     print("\n第一轮对话：")
     response1 = agent.invoke(
@@ -330,21 +338,21 @@ def main():
     print("="*70)
 
     try:
-        example_1_no_memory()
-        input("\n按 Enter 继续...")
-
-        example_2_with_memory()
-        input("\n按 Enter 继续...")
-
-        example_3_multiple_threads()
-        input("\n按 Enter 继续...")
-
-        example_4_memory_with_tools()
-        input("\n按 Enter 继续...")
-
-        example_5_inspect_memory()
-        input("\n按 Enter 继续...")
-
+        # example_1_no_memory()
+        # input("\n按 Enter 继续...")
+        #
+        # example_2_with_memory()
+        # input("\n按 Enter 继续...")
+        #
+        # example_3_multiple_threads()
+        # input("\n按 Enter 继续...")
+        #
+        # example_4_memory_with_tools()
+        # input("\n按 Enter 继续...")
+        #
+        # example_5_inspect_memory()
+        # input("\n按 Enter 继续...")
+        #
         example_6_practical_use()
 
         print("\n" + "="*70)

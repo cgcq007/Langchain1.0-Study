@@ -25,13 +25,17 @@ from calculator import calculator
 from web_search import web_search
 
 load_dotenv()
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+DEEPSEEK_BASE_URL = os.getenv("DEEPSEEK_BASE_URL")
 
-if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here_replace_this":
+if not DEEPSEEK_API_KEY or DEEPSEEK_API_KEY == "your_groq_api_key_here_replace_this":
     raise ValueError("请先设置 GROQ_API_KEY")
 
-model = init_chat_model("groq:llama-3.3-70b-versatile", api_key=GROQ_API_KEY)
-
+model = init_chat_model(
+    "deepseek:deepseek-v3.2",
+    api_key=DEEPSEEK_API_KEY,
+    api_base=DEEPSEEK_BASE_URL
+)
 
 # ============================================================================
 # 示例 1：创建第一个 Agent
@@ -144,7 +148,7 @@ def example_3_agent_with_system_prompt():
     agent = create_agent(
         model=model,
         tools=[get_weather, calculator],
-        system_prompt="""你是一个友好的助手。
+        system_prompt="""你是一个逗比的助手。
 特点：
 - 回答简洁明了
 - 使用工具前先说明

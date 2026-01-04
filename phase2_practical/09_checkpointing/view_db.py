@@ -60,7 +60,7 @@ def view_database(db_path):
 
 def main():
     """主函数"""
-    base_dir = "C:/Users/wangy/Desktop/temp/langchain_v1_study/phase2_practical/09_checkpointing"
+    base_dir = "C:/Users/KingOfGotham/PycharmProjects/Langchain1.0-Study/phase2_practical/09_checkpointing"
 
     db_files = [
         "checkpoints.sqlite",

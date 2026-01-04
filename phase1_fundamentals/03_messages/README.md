@@ -21,6 +21,7 @@ messages = [
 
 # ❌ 不推荐（太啰嗦）
 from langchain_core.messages import SystemMessage, HumanMessage
+
 messages = [
     SystemMessage(content="你是助手"),
     HumanMessage(content="你好")

@@ -14,12 +14,17 @@ from langchain.chat_models import init_chat_model
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
 load_dotenv()
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+DEEPSEEK_BASE_URL = os.getenv("DEEPSEEK_BASE_URL")
 
-if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here_replace_this":
+if not DEEPSEEK_API_KEY or DEEPSEEK_API_KEY == "your_groq_api_key_here_replace_this":
     raise ValueError("请先设置 GROQ_API_KEY")
 
-model = init_chat_model("groq:llama-3.3-70b-versatile", api_key=GROQ_API_KEY)
+model = init_chat_model(
+    "deepseek:deepseek-v3.2",
+    api_key=DEEPSEEK_API_KEY,
+    api_base=DEEPSEEK_BASE_URL
+)
 
 
 # ============================================================================
@@ -31,9 +36,9 @@ def example_1_message_types():
 
     重点：字典格式 vs 消息对象（推荐用字典）
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 1：三种消息类型对比")
-    print("="*70)
+    print("=" * 70)
 
     # 方式 1：消息对象（啰嗦）
     print("\n【方式 1：消息对象】")
@@ -65,9 +70,9 @@ def example_2_conversation_history():
 
     关键：每次调用都要传递完整历史！
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 2：对话历史管理（重点）")
-    print("="*70)
+    print("=" * 70)
 
     # 初始化对话历史
     conversation = [
@@ -116,9 +121,9 @@ def example_3_wrong_way():
 
     结果：AI 会"失忆"
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 3：错误示范 - AI 失忆")
-    print("="*70)
+    print("=" * 70)
 
     print("\n❌ 错误做法：不保存历史")
 
@@ -145,9 +150,9 @@ def example_4_optimize_history():
     1. 只保留最近 N 条
     2. 总是保留 system 消息
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 4：优化对话历史（避免太长）")
-    print("="*70)
+    print("=" * 70)
 
     def keep_recent_messages(messages, max_pairs=3):
         """
@@ -206,9 +211,9 @@ def example_5_simple_chatbot():
     """
     实战：构建一个记住对话的聊天机器人
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 5：实战 - 简单聊天机器人")
-    print("="*70)
+    print("=" * 70)
 
     conversation = [
         {"role": "system", "content": "你是一个友好的助手"}
@@ -240,9 +245,9 @@ def example_5_simple_chatbot():
 # 主程序
 # ============================================================================
 def main():
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(" LangChain 1.0 - 消息类型与对话管理")
-    print("="*70)
+    print("=" * 70)
 
     try:
         # example_1_message_types()
@@ -259,9 +264,9 @@ def main():
 
         example_5_simple_chatbot()
 
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(" 完成！")
-        print("="*70)
+        print("=" * 70)
         print("\n核心要点：")
         print("  ✅ 推荐用字典格式，不用消息对象")
         print("  ✅ 对话历史必须每次都传递完整的")

@@ -23,12 +23,17 @@ from calculator import calculator
 from weather import get_weather
 
 load_dotenv()
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+DEEPSEEK_BASE_URL = os.getenv("DEEPSEEK_BASE_URL")
 
-if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here_replace_this":
+if not DEEPSEEK_API_KEY or DEEPSEEK_API_KEY == "your_groq_api_key_here_replace_this":
     raise ValueError("请先设置 GROQ_API_KEY")
 
-model = init_chat_model("groq:llama-3.3-70b-versatile", api_key=GROQ_API_KEY)
+model = init_chat_model(
+    "deepseek:deepseek-v3.2",
+    api_key=DEEPSEEK_API_KEY,
+    api_base=DEEPSEEK_BASE_URL
+)
 
 
 # ============================================================================
@@ -40,9 +45,9 @@ def example_1_understand_loop():
 
     关键：response['messages'] 包含完整的对话历史
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 1：Agent 执行循环详解")
-    print("="*70)
+    print("=" * 70)
 
     agent = create_agent(
         model=model,
@@ -56,9 +61,9 @@ def example_1_understand_loop():
 
     print("\n完整消息历史：")
     for i, msg in enumerate(response['messages'], 1):
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"消息 {i}: {msg.__class__.__name__}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
         if hasattr(msg, 'content') and msg.content:
             print(f"内容: {msg.content}")
@@ -95,9 +100,9 @@ def example_2_streaming():
 
     使用 .stream() 方法
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 2：流式输出")
-    print("="*70)
+    print("=" * 70)
 
     agent = create_agent(
         model=model,
@@ -113,9 +118,9 @@ def example_2_streaming():
         "messages": [{"role": "user", "content": "北京天气如何？"}]
     }):
         # chunk 是字典，包含更新的状态
-        if 'messages' in chunk:
-            # 获取最新的消息
-            latest_msg = chunk['messages'][-1]
+        latest_msg = chunk.get('model', {}).get('messages', [])
+        if latest_msg:
+            latest_msg = latest_msg[-1]
 
             # 如果是 AI 的最终回答
             if hasattr(latest_msg, 'content') and latest_msg.content:
@@ -137,9 +142,9 @@ def example_3_multi_step():
 
     理解复杂任务的执行过程
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 3：多步骤执行")
-    print("="*70)
+    print("=" * 70)
 
     agent = create_agent(
         model=model,
@@ -176,9 +181,9 @@ def example_4_inspect_state():
 
     使用 stream 并检查每个 chunk
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 4：查看中间状态")
-    print("="*70)
+    print("=" * 70)
 
     agent = create_agent(
         model=model,
@@ -194,9 +199,9 @@ def example_4_inspect_state():
     }):
         step += 1
         print(f"\n步骤 {step}:")
-
-        if 'messages' in chunk:
-            latest = chunk['messages'][-1]
+        latest = chunk.get('model', {}).get('messages', [])
+        if len(latest) > 0:
+            latest = latest[-1]
             msg_type = latest.__class__.__name__
             print(f"  类型: {msg_type}")
 
@@ -204,6 +209,7 @@ def example_4_inspect_state():
                 print(f"  工具调用: {latest.tool_calls[0]['name']}")
             elif hasattr(latest, 'content') and latest.content:
                 print(f"  内容: {latest.content[:50]}...")  # 只显示前50个字符
+
 
     print("\n关键点：")
     print("  - stream 让你看到每个步骤")
@@ -220,9 +226,9 @@ def example_5_message_types():
 
     Agent 执行循环中的消息类型
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 5：消息类型详解")
-    print("="*70)
+    print("=" * 70)
 
     agent = create_agent(
         model=model,
@@ -271,9 +277,9 @@ def example_6_best_practices():
     """
     示例6：使用执行循环的最佳实践
     """
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("示例 6：执行循环最佳实践")
-    print("="*70)
+    print("=" * 70)
 
     print("""
 最佳实践：
@@ -332,31 +338,31 @@ def example_6_best_practices():
 # 主程序
 # ============================================================================
 def main():
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(" LangChain 1.0 - Agent 执行循环")
-    print("="*70)
+    print("=" * 70)
 
     try:
-        example_1_understand_loop()
-        input("\n按 Enter 继续...")
-
-        example_2_streaming()
-        input("\n按 Enter 继续...")
-
-        example_3_multi_step()
-        input("\n按 Enter 继续...")
-
-        example_4_inspect_state()
-        input("\n按 Enter 继续...")
-
+        # # example_1_understand_loop()
+        # input("\n按 Enter 继续...")
+        #
+        # example_2_streaming()
+        # input("\n按 Enter 继续...")
+        #
+        # example_3_multi_step()
+        # input("\n按 Enter 继续...")
+        #
+        # example_4_inspect_state()
+        # input("\n按 Enter 继续...")
+        #
         example_5_message_types()
-        input("\n按 Enter 继续...")
+        # input("\n按 Enter 继续...")
+        #
+        # example_6_best_practices()
 
-        example_6_best_practices()
-
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(" 完成！")
-        print("="*70)
+        print("=" * 70)
         print("\n核心要点：")
         print("  Agent 执行循环：问题 → 工具调用 → 结果 → 答案")
         print("  messages 记录完整历史")
